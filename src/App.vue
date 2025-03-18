@@ -5,7 +5,10 @@
         块区
       </h3>
       <div class="block">
-        <div v-for="item in list" @mousedown="handleDragItem(item)" style="padding:5px;border:1px solid black;margin-right: 10px;cursor: grab;
+        <div v-for="item in list" :style="{
+          border: `2px solid ${item.properties.style.stroke}`,
+          borderRadius: '4px'
+        }" @mousedown="handleDragItem(item)" style="padding:5px; margin-right: 10px;cursor: grab;
   user-select: none;">
           {{ item.text }}
         </div>
@@ -46,7 +49,8 @@ const jsonData = ref('')
 const config: Partial<LogicFlow.Options> = {
   isSilentMode: false,
   stopScrollGraph: true,
-  stopZoomGraph: true,
+  stopZoomGraph: false,
+  textEdit:false,
   style: {
     rect: {
       rx: 5,
@@ -84,19 +88,39 @@ const config: Partial<LogicFlow.Options> = {
 const list = ref([
   {
     type: 'rect',
-    text: 'root1'
+    text: 'root1',
+    properties:{
+      style:{
+        stroke:"blue"
+      }
+    }
   },
   {
     type: 'rect',
-    text: 'root2'
+    text: 'root2',
+    properties:{
+      style:{
+        stroke:"blue"
+      }
+    }
   },
   {
     type: 'rect',
-    text: 'source1'
+    text: 'source1',
+    properties:{
+      style:{
+        stroke:"red"
+      }
+    }
   },
   {
     type: 'rect',
-    text: 'source2'
+    text: 'source2',
+    properties:{
+      style:{
+        stroke:"red"
+      }
+    }
   },
 ])
 onMounted(() => {
@@ -104,6 +128,9 @@ onMounted(() => {
     ...config,
     container: containerRef.value,
     grid: true,
+    idGenerator: (type) => {
+      return type!+Date.now()
+    }
   });
   lf.render();
 })
@@ -121,119 +148,150 @@ function preview() {
   const data = {
   "nodes": [
     {
-      "id": "26558521-c078-4468-982f-5ae1b8e09560",
+      "id": "rect1742273971353",
       "type": "rect",
-      "x": 271.3333330154419,
-      "y": 84.66666412353516,
+      "x": 142.3333330154419,
+      "y": 147,
       "properties": {
+        "style": {
+          "stroke": "blue"
+        },
         "width": 100,
         "height": 80
       },
       "text": {
-        "x": 271.3333330154419,
-        "y": 84.66666412353516,
+        "x": 142.3333330154419,
+        "y": 147,
         "value": "root1"
       }
     },
     {
-      "id": "11030f2f-9686-420a-a5c2-cde0c2444c72",
+      "id": "rect1742273971895",
       "type": "rect",
-      "x": 715.3333330154419,
-      "y": 121.66666412353516,
+      "x": 337.3333330154419,
+      "y": 179,
       "properties": {
+        "style": {
+          "stroke": "blue"
+        },
         "width": 100,
         "height": 80
       },
       "text": {
-        "x": 715.3333330154419,
-        "y": 121.66666412353516,
+        "x": 337.3333330154419,
+        "y": 179,
+        "value": "root2"
+      }
+    },
+    {
+      "id": "rect1742273972431",
+      "type": "rect",
+      "x": 463.3333330154419,
+      "y": 267,
+      "properties": {
+        "style": {
+          "stroke": "red"
+        },
+        "width": 100,
+        "height": 80
+      },
+      "text": {
+        "x": 463.3333330154419,
+        "y": 267,
         "value": "source1"
       }
     },
     {
-      "id": "22aa9fe6-9ea2-471a-8f3a-8303ac1c0c1d",
+      "id": "rect1742273973824",
       "type": "rect",
-      "x": 545.3333330154419,
-      "y": 250.66666412353516,
+      "x": 199.3333330154419,
+      "y": 354,
       "properties": {
+        "style": {
+          "stroke": "red"
+        },
         "width": 100,
         "height": 80
       },
       "text": {
-        "x": 545.3333330154419,
-        "y": 250.66666412353516,
-        "value": "root2"
+        "x": 199.3333330154419,
+        "y": 354,
+        "value": "source2"
       }
     }
   ],
   "edges": [
     {
-      "id": "19f0cdb3-a97c-46ba-ab3c-44ddf56fbfff",
+      "id": "polyline1742273975872",
       "type": "polyline",
       "properties": {},
-      "sourceNodeId": "26558521-c078-4468-982f-5ae1b8e09560",
-      "targetNodeId": "22aa9fe6-9ea2-471a-8f3a-8303ac1c0c1d",
-      "sourceAnchorId": "26558521-c078-4468-982f-5ae1b8e09560_1",
-      "targetAnchorId": "22aa9fe6-9ea2-471a-8f3a-8303ac1c0c1d_3",
+      "sourceNodeId": "rect1742273971353",
+      "targetNodeId": "rect1742273973824",
+      "sourceAnchorId": "rect1742273971353_2",
+      "targetAnchorId": "rect1742273973824_0",
       "startPoint": {
-        "x": 321.3333330154419,
-        "y": 84.66666412353516
+        "x": 142.3333330154419,
+        "y": 187
       },
       "endPoint": {
-        "x": 495.3333330154419,
-        "y": 250.66666412353516
+        "x": 199.3333330154419,
+        "y": 314
       },
       "pointsList": [
         {
-          "x": 321.3333330154419,
-          "y": 84.66666412353516
+          "x": 142.3333330154419,
+          "y": 187
         },
         {
-          "x": 465.3333330154419,
-          "y": 84.66666412353516
+          "x": 142.3333330154419,
+          "y": 250.5
         },
         {
-          "x": 465.3333330154419,
-          "y": 250.66666412353516
+          "x": 199.3333330154419,
+          "y": 250.5
         },
         {
-          "x": 495.3333330154419,
-          "y": 250.66666412353516
+          "x": 199.3333330154419,
+          "y": 314
         }
       ]
     },
     {
-      "id": "f6a6e409-2e03-49bf-a6aa-456d51d1ec8c",
+      "id": "polyline1742273978218",
       "type": "polyline",
       "properties": {},
-      "sourceNodeId": "22aa9fe6-9ea2-471a-8f3a-8303ac1c0c1d",
-      "targetNodeId": "11030f2f-9686-420a-a5c2-cde0c2444c72",
-      "sourceAnchorId": "22aa9fe6-9ea2-471a-8f3a-8303ac1c0c1d_1",
-      "targetAnchorId": "11030f2f-9686-420a-a5c2-cde0c2444c72_3",
+      "sourceNodeId": "rect1742273971895",
+      "targetNodeId": "rect1742273972431",
+      "sourceAnchorId": "rect1742273971895_2",
+      "targetAnchorId": "rect1742273972431_3",
       "startPoint": {
-        "x": 595.3333330154419,
-        "y": 250.66666412353516
+        "x": 337.3333330154419,
+        "y": 219
       },
       "endPoint": {
-        "x": 665.3333330154419,
-        "y": 121.66666412353516
+        "x": 413.3333330154419,
+        "y": 267
       },
       "pointsList": [
         {
-          "x": 595.3333330154419,
-          "y": 250.66666412353516
+          "x": 337.3333330154419,
+          "y": 219
         },
         {
-          "x": 635.3333330154419,
-          "y": 250.66666412353516
+          "x": 337.3333330154419,
+          "y": 249
         },
         {
-          "x": 635.3333330154419,
-          "y": 121.66666412353516
+          "x": 383.3333330154419,
+          "y": 249
         },
         {
-          "x": 665.3333330154419,
-          "y": 121.66666412353516
+          "x": 383.3333330154419,
+          "y": 267
+        },
+        {
+          "x": 413.3333330154419,
+          "y": 267
         }
       ]
     }
