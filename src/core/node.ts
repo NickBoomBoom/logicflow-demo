@@ -129,14 +129,15 @@ class DotEllipse extends EllipseNodeModel {
   __info__ = INFO_MAP.THREE;
 
   setAttributes(): void {
-    this.rx = 40;
-    this.ry = 40;
+    this.rx = 35;
+    this.ry = 35;
     this.style = {
       strokeWidth: 10,
       fill: "#74b9ff",
       stroke: "#74b9ff",
     };
   }
+
   getConnectedSourceRules(): Model.ConnectRule[] {
     const rules = super.getConnectedSourceRules();
     rules.push(commonModelConnectRule);
