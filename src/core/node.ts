@@ -101,9 +101,6 @@ class RootRect extends RectNodeModel {
   __info__ = INFO_MAP.ROOT;
 
   setAttributes(): void {
-    const { width } = this;
-    const PADDING_X = 20;
-    this.width = width + PADDING_X * 2;
     this.style = {
       rx: 10,
       ry: 10,

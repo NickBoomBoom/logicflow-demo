@@ -108,7 +108,7 @@ const config: Partial<LogicFlow.Options> = {
       thickness: 1,
     },
   },
-  plugins: [Menu],
+  // plugins: [Menu],
 };
 
 const list = ref([
@@ -182,7 +182,7 @@ onMounted(() => {
   lf.setTheme({
     baseEdge: {
       stroke: "#000000",
-      strokeWidth: 4,
+      strokeWidth: 2,
     },
     anchor: {
       stroke: "#000000",
