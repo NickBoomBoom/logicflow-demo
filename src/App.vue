@@ -1,303 +1,231 @@
 <template>
   <div class="home">
     <div class="home-l">
-      <h3>
-        块区
-      </h3>
+      <h3>块区</h3>
       <div class="block">
-        <div v-for="item in list" :style="{
-          border: `2px solid ${item.properties.style.stroke}`,
-          borderRadius: '4px'
-        }" @mousedown="handleDragItem(item)" style="padding:5px; margin-right: 10px;cursor: grab;
-  user-select: none;">
+        <div
+          v-for="item in list"
+          :style="{
+            border: `2px solid ${item.properties.style.stroke}`,
+            borderRadius: '4px',
+          }"
+          @mousedown="handleDragItem(item)"
+          style="
+            padding: 5px;
+            margin-right: 10px;
+            cursor: grab;
+            user-select: none;
+          "
+        >
           {{ item.text }}
         </div>
       </div>
       <div class="container" ref="containerRef"></div>
-
     </div>
 
     <div class="home-r">
       <h3>操作</h3>
-      <div style="margin:10px 0;">
-        <button  style="margin-right: 10px;" @click="preview">载入数据</button>
+      <div style="margin: 10px 0">
+        <button style="margin-right: 10px" @click="preview">载入数据</button>
         <button @click="getData">获取数据</button>
       </div>
 
       <h3>数据JSON展示(点击获取数据)</h3>
 
       <div class="scroll-box">
-
-        <JsonViewer :value="jsonData" copyable expanded :expandDepth="6" boxed sort theme="jv-light" />
+        <JsonViewer
+          :value="jsonData"
+          copyable
+          expanded
+          :expandDepth="6"
+          boxed
+          sort
+          theme="jv-light"
+        />
       </div>
-
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-
-
-import LogicFlow from "@logicflow/core";
+import LogicFlow, { distance } from "@logicflow/core";
 import "@logicflow/core/lib/style/index.css";
 import { onMounted, ref } from "vue";
-// import "@logicflow/core/dist/style/index.css"; // 2.0版本前的引入方式
-const containerRef = ref()
-let lf: any = null
-const jsonData = ref('')
+
+import { customRects, NODE_TYPE } from "./core/node";
+
+import { SmoothCurved } from "./core/line";
+const containerRef = ref();
+let lf: LogicFlow;
+const jsonData = ref("");
 const config: Partial<LogicFlow.Options> = {
-  isSilentMode: false,
-  stopScrollGraph: true,
-  stopZoomGraph: false,
-  textEdit:false,
-  style: {
-    rect: {
-      rx: 5,
-      ry: 5,
-      strokeWidth: 2,
-    },
-    circle: {
-      fill: '#f5f5f5',
-      stroke: '#666',
-    },
-    ellipse: {
-      fill: '#dae8fc',
-      stroke: '#6c8ebf',
-    },
-    polygon: {
-      fill: '#d5e8d4',
-      stroke: '#82b366',
-    },
-    diamond: {
-      fill: '#ffe6cc',
-      stroke: '#d79b00',
-    },
-    text: {
-      color: '#b85450',
-      fontSize: 12,
-    },
-    // 下面的 style 移动到此处，不然会覆盖上面设置的各图形的主题样式
-    inputText: {
-      background: 'black',
-      color: 'white',
+  edgeTextEdit: false,
+  keyboard: {
+    enabled: true,
+
+    shortcuts: [
+      {
+        keys: ["backspace"],
+        callback: () => {
+          const els = lf.getSelectElements(true);
+          const { edges, nodes } = els;
+          lf.clearSelectElements();
+          edges.forEach((edge) => lf.deleteEdge(edge.id));
+          nodes.forEach((node) => {
+            const isCanDelete = ![NODE_TYPE.ROOT].includes(node.type);
+            if (isCanDelete) {
+              lf.deleteNode(node.id);
+            } else {
+              alert("当前元素不可删除");
+            }
+          });
+        },
+      },
+    ],
+  },
+  grid: {
+    size: 20,
+    visible: true,
+    type: "mesh",
+    config: {
+      color: "#ababab",
+      thickness: 1,
     },
   },
 };
 
 const list = ref([
   {
-    type: 'rect',
-    text: 'root1',
-    properties:{
-      style:{
-        stroke:"blue"
-      }
-    }
+    type: "rect",
+    text: "root1",
+    properties: {
+      style: {
+        stroke: "blue",
+      },
+    },
   },
   {
-    type: 'rect',
-    text: 'root2',
-    properties:{
-      style:{
-        stroke:"blue"
-      }
-    }
+    type: "rect",
+    text: "root2",
+    properties: {
+      style: {
+        stroke: "blue",
+      },
+    },
   },
   {
-    type: 'rect',
-    text: 'source1',
-    properties:{
-      style:{
-        stroke:"red"
-      }
-    }
+    type: "rect",
+    text: "source1",
+    properties: {
+      style: {
+        stroke: "red",
+      },
+    },
   },
   {
-    type: 'rect',
-    text: 'source2',
-    properties:{
-      style:{
-        stroke:"red"
-      }
-    }
+    type: "rect",
+    text: "source2",
+    properties: {
+      style: {
+        stroke: "red",
+      },
+    },
   },
-])
+]);
 onMounted(() => {
   lf = new LogicFlow({
     ...config,
     container: containerRef.value,
-    grid: true,
-    idGenerator: (type) => {
-      return type!+Date.now()
-    }
   });
-  lf.render();
-})
+  lf.batchRegister(customRects);
+  lf.setDefaultEdgeType("smoothCurvedEdge");
+  lf.render({});
+  lf.addNode({
+    id: "root-10",
+    type: NODE_TYPE.ROOT,
+    x: 0,
+    y: 0,
+    text: "主题",
+  });
+
+  lf.addNode({
+    id: "skill-10",
+    type: NODE_TYPE.SKILL,
+    properties: {
+      b: 1,
+      a: 2,
+      c: 555,
+    },
+    x: 0,
+    y: 90,
+    text: "技能",
+  });
+
+  lf.addNode({
+    id: "knowledge-10",
+    type: NODE_TYPE.KNOWLEDGE,
+    x: 250,
+    y: 90,
+    text: "知识点",
+  });
+  lf.addNode({
+    id: "example-10",
+    type: NODE_TYPE.EXAMPLE,
+    x: 450,
+    y: 90,
+    text: "案例",
+  });
+  lf.addNode({
+    id: "dot-10",
+    type: NODE_TYPE.DOT,
+    x: 40,
+    y: 0,
+    text: "技能点",
+  });
+
+  lf.focusOn({
+    id: "root-10",
+  });
+
+  lf.setTheme({
+    baseEdge: {
+      stroke: "#000000",
+      strokeWidth: 4,
+    },
+    anchor: {
+      stroke: "#000000",
+      fill: "#FFFFFF",
+      r: 8,
+      hover: {
+        fill: "#949494",
+        fillOpacity: 0.5,
+        stroke: "#949494",
+        r: 12,
+      },
+    },
+  });
+  lf.on("connection:not-allowed", ({ data, msg }) => {
+    console.error(3333, data, msg);
+    alert(msg);
+  });
+  lf.on("node:delete", (data) => {
+    console.log(333, data);
+  });
+});
 
 function handleDragItem(node: any) {
   lf?.dnd.startDrag(node);
 }
 
 function getData() {
-  const data = lf.getGraphData()
-  jsonData.value =data
+  const data = lf.getGraphData();
+  jsonData.value = data;
 }
 
 function preview() {
-  const data = {
-  "nodes": [
-    {
-      "id": "rect1742273971353",
-      "type": "rect",
-      "x": 142.3333330154419,
-      "y": 147,
-      "properties": {
-        "style": {
-          "stroke": "blue"
-        },
-        "width": 100,
-        "height": 80
-      },
-      "text": {
-        "x": 142.3333330154419,
-        "y": 147,
-        "value": "root1"
-      }
-    },
-    {
-      "id": "rect1742273971895",
-      "type": "rect",
-      "x": 337.3333330154419,
-      "y": 179,
-      "properties": {
-        "style": {
-          "stroke": "blue"
-        },
-        "width": 100,
-        "height": 80
-      },
-      "text": {
-        "x": 337.3333330154419,
-        "y": 179,
-        "value": "root2"
-      }
-    },
-    {
-      "id": "rect1742273972431",
-      "type": "rect",
-      "x": 463.3333330154419,
-      "y": 267,
-      "properties": {
-        "style": {
-          "stroke": "red"
-        },
-        "width": 100,
-        "height": 80
-      },
-      "text": {
-        "x": 463.3333330154419,
-        "y": 267,
-        "value": "source1"
-      }
-    },
-    {
-      "id": "rect1742273973824",
-      "type": "rect",
-      "x": 199.3333330154419,
-      "y": 354,
-      "properties": {
-        "style": {
-          "stroke": "red"
-        },
-        "width": 100,
-        "height": 80
-      },
-      "text": {
-        "x": 199.3333330154419,
-        "y": 354,
-        "value": "source2"
-      }
-    }
-  ],
-  "edges": [
-    {
-      "id": "polyline1742273975872",
-      "type": "polyline",
-      "properties": {},
-      "sourceNodeId": "rect1742273971353",
-      "targetNodeId": "rect1742273973824",
-      "sourceAnchorId": "rect1742273971353_2",
-      "targetAnchorId": "rect1742273973824_0",
-      "startPoint": {
-        "x": 142.3333330154419,
-        "y": 187
-      },
-      "endPoint": {
-        "x": 199.3333330154419,
-        "y": 314
-      },
-      "pointsList": [
-        {
-          "x": 142.3333330154419,
-          "y": 187
-        },
-        {
-          "x": 142.3333330154419,
-          "y": 250.5
-        },
-        {
-          "x": 199.3333330154419,
-          "y": 250.5
-        },
-        {
-          "x": 199.3333330154419,
-          "y": 314
-        }
-      ]
-    },
-    {
-      "id": "polyline1742273978218",
-      "type": "polyline",
-      "properties": {},
-      "sourceNodeId": "rect1742273971895",
-      "targetNodeId": "rect1742273972431",
-      "sourceAnchorId": "rect1742273971895_2",
-      "targetAnchorId": "rect1742273972431_3",
-      "startPoint": {
-        "x": 337.3333330154419,
-        "y": 219
-      },
-      "endPoint": {
-        "x": 413.3333330154419,
-        "y": 267
-      },
-      "pointsList": [
-        {
-          "x": 337.3333330154419,
-          "y": 219
-        },
-        {
-          "x": 337.3333330154419,
-          "y": 249
-        },
-        {
-          "x": 383.3333330154419,
-          "y": 249
-        },
-        {
-          "x": 383.3333330154419,
-          "y": 267
-        },
-        {
-          "x": 413.3333330154419,
-          "y": 267
-        }
-      ]
-    }
-  ]
-}
-lf.render(data)
+  const data = {};
+  lf.render(data);
+  lf.focusOn("root-10");
 }
 </script>
 
@@ -309,10 +237,10 @@ lf.render(data)
   padding: 10px 10px;
 }
 .home-l {
-width: 60%;
-height: 100%;
-display: flex;
-flex-direction: column;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .block {
   display: flex;
@@ -320,25 +248,23 @@ flex-direction: column;
 }
 
 .container {
-  flex:1;
+  flex: 1;
   border: 1px solid grey;
   width: 100%;
   height: 100%;
 }
 
 .home-r {
-height: 100%;
-width: 40%;
-display: flex;
-flex-direction: column;
+  height: 100%;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
   margin-left: 10px;
 }
-
 
 .scroll-box {
   margin-top: 10px;
   overflow: auto;
   flex: 1;
 }
-
 </style>
