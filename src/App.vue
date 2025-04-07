@@ -54,9 +54,7 @@ import "@logicflow/core/lib/style/index.css";
 import { onMounted, ref } from "vue";
 import { customRects, NODE_TYPE } from "./core/node";
 import { SmoothCurved } from "./core/line";
-import { Menu } from "@logicflow/extension";
 import "@logicflow/extension/lib/style/index.css";
-LogicFlow.use(Menu);
 
 const containerRef = ref();
 let lf: LogicFlow;

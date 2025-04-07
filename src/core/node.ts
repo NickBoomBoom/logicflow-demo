@@ -1,7 +1,5 @@
 import LogicFlow, {
   BaseNodeModel,
-  EllipseNode,
-  EllipseNodeModel,
   RectNode,
   RectNodeModel,
   type Model,
@@ -70,12 +68,15 @@ const commonModelConnectRule: Model.ConnectRule = {
 
 class RootRect extends RectNodeModel {
   __info__ = INFO_MAP.ROOT;
-
+  setSelected(selected: boolean): void {
+    this.isSelected = selected;
+    this.setAttributes();
+  }
   setAttributes(): void {
     this.style = {
       rx: 10,
       ry: 10,
-      stroke: "#FF6503",
+      stroke: this.isSelected ? "#2ecc71" : "#FF6503",
       fill: "#FF6503",
     };
   }
@@ -96,13 +97,17 @@ class RootRect extends RectNodeModel {
 class SecondRect extends RectNodeModel {
   __info__ = INFO_MAP.SECOND;
 
+  setSelected(selected: boolean): void {
+    this.isSelected = selected;
+    this.setAttributes();
+  }
+
   setAttributes(): void {
     this.height = 60;
     this.style = {
       rx: 10,
       ry: 10,
-      strokeWidth: 5,
-      stroke: "#FFA400",
+      stroke: this.isSelected ? "#2ecc71" : "#FFA400",
       fill: "#FFA400",
     };
   }
@@ -122,16 +127,21 @@ class SecondRect extends RectNodeModel {
 
 class DotRect extends RectNodeModel {
   __info__ = INFO_MAP.THREE;
+  setSelected(selected: boolean): void {
+    this.isSelected = selected;
+    this.setAttributes();
+  }
 
   setAttributes(): void {
     this.height = 40;
     this.style = {
       rx: 10,
       ry: 10,
-      stroke: "#1E80FF",
+      stroke: this.isSelected ? "#2ecc71" : "#1E80FF",
       fill: "#1E80FF",
     };
   }
+
   getConnectedSourceRules(): Model.ConnectRule[] {
     const rules = super.getConnectedSourceRules();
     rules.push(commonModelConnectRule);
