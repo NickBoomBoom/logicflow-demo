@@ -73,6 +73,8 @@ class RootRect extends RectNodeModel {
     this.setAttributes();
   }
   setAttributes(): void {
+    this.width += 20;
+    this.height = 60;
     this.style = {
       rx: 10,
       ry: 10,
