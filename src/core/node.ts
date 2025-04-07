@@ -68,13 +68,36 @@ const commonModelConnectRule: Model.ConnectRule = {
   },
 };
 
+class RootRect extends RectNodeModel {
+  __info__ = INFO_MAP.ROOT;
+
+  setAttributes(): void {
+    this.style = {
+      rx: 10,
+      ry: 10,
+      stroke: "#FF6503",
+      fill: "#FF6503",
+    };
+  }
+  getConnectedSourceRules(): Model.ConnectRule[] {
+    const rules = super.getConnectedSourceRules();
+    rules.push(commonModelConnectRule);
+    return rules;
+  }
+  getTextStyle(): LogicFlow.TextNodeTheme {
+    return {
+      fontSize: 14,
+      overflowMode: "autoWrap",
+      color: "#ffffff",
+    };
+  }
+}
+
 class SecondRect extends RectNodeModel {
   __info__ = INFO_MAP.SECOND;
 
   setAttributes(): void {
-    const { width } = this;
-    const PADDING_X = 5;
-    this.width = width + PADDING_X * 2;
+    this.height = 60;
     this.style = {
       rx: 10,
       ry: 10,
@@ -97,44 +120,18 @@ class SecondRect extends RectNodeModel {
   }
 }
 
-class RootRect extends RectNodeModel {
-  __info__ = INFO_MAP.ROOT;
-
-  setAttributes(): void {
-    this.style = {
-      rx: 10,
-      ry: 10,
-      strokeWidth: 5,
-      stroke: "#FF6503",
-      fill: "#FF6503",
-    };
-  }
-  getConnectedSourceRules(): Model.ConnectRule[] {
-    const rules = super.getConnectedSourceRules();
-    rules.push(commonModelConnectRule);
-    return rules;
-  }
-  getTextStyle(): LogicFlow.TextNodeTheme {
-    return {
-      fontSize: 14,
-      overflowMode: "autoWrap",
-      color: "#ffffff",
-    };
-  }
-}
-class DotEllipse extends EllipseNodeModel {
+class DotRect extends RectNodeModel {
   __info__ = INFO_MAP.THREE;
 
   setAttributes(): void {
-    this.rx = 35;
-    this.ry = 35;
+    this.height = 40;
     this.style = {
-      strokeWidth: 10,
-      fill: "#74b9ff",
-      stroke: "#74b9ff",
+      rx: 10,
+      ry: 10,
+      stroke: "#1E80FF",
+      fill: "#1E80FF",
     };
   }
-
   getConnectedSourceRules(): Model.ConnectRule[] {
     const rules = super.getConnectedSourceRules();
     rules.push(commonModelConnectRule);
@@ -172,7 +169,7 @@ export const customRects = [
   },
   {
     type: NODE_TYPE.DOT,
-    view: EllipseNode,
-    model: DotEllipse,
+    view: RectNode,
+    model: DotRect,
   },
 ];
